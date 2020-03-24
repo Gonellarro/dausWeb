@@ -11,12 +11,14 @@ public class Partida {
     private String idSessio;
     private boolean enMarxa;
     private ArrayList<Jugador> jugadors;
+    private int maxJugadors;
 
     public Partida(String id) {
         this.punts = 0;
         this.idSessio = id;
         totalPartides++;
         this.jugadors = new ArrayList<Jugador>();
+        this.maxJugadors = 99;
     }
 
     public int getPunts() {
