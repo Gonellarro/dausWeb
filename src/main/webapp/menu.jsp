@@ -18,7 +18,7 @@
         <!-- Capçalera -->
         <jsp:include page="WEB-INF/comuns/capcalera.jsp"/>     
         
-        <h4 class="text-center">1.Escollim el nostre jugador</h1>
+        <h4 class="text-center">1.Escollim el nostre jugador</h4>
         <br>
         <form action="${pageContext.request.contextPath}/MenuControler" method="post">
             <div class="section m-2 p-2 border text-center">

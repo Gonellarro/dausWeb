@@ -12,7 +12,10 @@
     </head>
     <body>
         <form action="${pageContext.request.contextPath}/JocControler" method="post">
-        <div class="container">
+        <jsp:include page="WEB-INF/comuns/capcalera.jsp"/>   
+        <h4 class="text-center">3.Creació de partida nova</h4>
+        <br>
+        <div class="section m-2 p-2 border text-center">
             <div class="row">
                 <div class="col-12 col-md-4">
                     Codi de la partida a compartir: ${partida.idSessio}<br>
