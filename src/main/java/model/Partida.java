@@ -1,8 +1,7 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class Partida {
 
@@ -10,8 +9,9 @@ public class Partida {
     private int punts;
     private String idSessio;
     private boolean enMarxa;
-    private ArrayList<Jugador> jugadors;
+    private List<Jugador> jugadors;
     private int maxJugadors;
+    private String titol;
 
     public Partida(String id) {
         this.punts = 0;
@@ -53,16 +53,44 @@ public class Partida {
         this.enMarxa = enMarxa;
     }
 
-    public ArrayList<Jugador> getJugadors() {
+    public List<Jugador> getJugadors() {
         return jugadors;
     }
 
-    public void setJugadors(ArrayList<Jugador> jugadors) {
+    public void setJugadors(List<Jugador> jugadors) {
         this.jugadors = jugadors;
+    }
+
+    public int getMaxJugadors() {
+        return maxJugadors;
+    }
+
+    public void setMaxJugadors(int maxJugadors) {
+        this.maxJugadors = maxJugadors;
+    }
+
+    public String getTitol() {
+        return titol;
+    }
+
+    public void setTitol(String titol) {
+        this.titol = titol;
     }
 
     public void afegeixJugador(Jugador jugador) {
         this.jugadors.add(jugador);
+    }
+    
+    public void actualitzaJugadors(List<Jugador> jugadors){
+        //Netejam la llista
+        this.jugadors.clear();
+        System.out.println("Jugadors nets:" + jugadors);
+        //Posam tots els jugadors que ens passen per actualitzar
+        for(Jugador j : jugadors){
+            System.out.println("Insertant jugador:" + j );
+            this.jugadors.add(j);
+        }
+        System.out.println("Jugadors insertats: " + this.jugadors);
     }
 
 }

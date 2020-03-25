@@ -18,8 +18,10 @@
         <div class="section m-2 p-2 border text-center">
             <div class="row">
                 <div class="col-12 col-md-4">
-                    Codi de la partida a compartir: ${partida.idSessio}<br>
-                     <input type="hidden" id="partida" name="partida" value="0">
+                    Codi de la partida a compartir: <em>${idSessio}</em><br>
+                     <input type="hidden" id="idSessio" name="idSessio" value="${idSessio}">
+                     <input type="hidden" id="crear" name="crear" value="true">
+                     <br>
                      <button type="submit" class="btn btn-primary">Començar!</button>
                      
                 </div>			

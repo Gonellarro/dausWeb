@@ -5,7 +5,7 @@ public class Jugador {
     private String avatar;
     private int punts;
     private int partidesJugades;
-    private String idPartida;
+    private String idSessio;
     private int valorDau;
     private boolean creador;
     
@@ -13,7 +13,7 @@ public class Jugador {
         this.partidesJugades = 0;
         this.punts = 0;
         this.avatar = "default";
-        this.idPartida = "";
+        this.idSessio = "";
         this.valorDau = 1;
         this.creador = false;
     }
@@ -24,7 +24,7 @@ public class Jugador {
 
     @Override
     public String toString() {
-        return "Jugador{" + "nom=" + nom + ", avatar=" + avatar + ", punts=" + punts + ", partidesJugades=" + partidesJugades + ", idPartida=" + idPartida + ", valorDau=" + valorDau + ", creador=" + creador + '}';
+        return "Jugador{" + "nom=" + nom + ", avatar=" + avatar + ", punts=" + punts + ", partidesJugades=" + partidesJugades + ", idSessio=" + idSessio + ", valorDau=" + valorDau + ", creador=" + creador + '}';
     }
 
     public void setNom(String nom) {
@@ -55,12 +55,12 @@ public class Jugador {
         this.partidesJugades = partidesJugades;
     }
 
-    public String getIdPartida() {
-        return idPartida;
+    public String getIdSessio() {
+        return idSessio;
     }
 
-    public void setIdPartida(String idPartida) {
-        this.idPartida = idPartida;
+    public void setIdSessio(String idSessio) {
+        this.idSessio = idSessio;
     }
 
     public int getValorDau() {

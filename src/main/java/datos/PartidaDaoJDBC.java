@@ -61,7 +61,7 @@ public class PartidaDaoJDBC{
         }
     }
 
-    public Partida consultarIdSessio(String idSessio) {
+    public Partida consultaPartida(String idSessio) {
         Partida partida = null;
         Connection conn = null;
         PreparedStatement stmt = null;

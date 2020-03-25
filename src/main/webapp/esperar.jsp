@@ -6,6 +6,8 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!--<meta http-equiv="refresh" content="5"> -->
+
 
         <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
@@ -13,22 +15,42 @@
         <title>Espera partida de daus multijugador</title>
     </head>
     <body>
-        Esperant als jugadors...
         <form action="${pageContext.request.contextPath}/JocControler" method="post">
-            <div class="container">
+            <jsp:include page="WEB-INF/comuns/capcalera.jsp"/>   
+            <h4 class="text-center">4.Esperant als jugadors</h4>
+            <br>
+            <div class="section m-2 p-2 border text-center">
                 <div class="row">
                     <div class="col-12 col-md-4">
-                        Partida: ${partida.idSessio}
-                        <c:forEach items = "${partida.jugadors}" var="jugador">            
-                            <img src="resources/img/hippiicons/<c:out value="${jugador.avatar}"/>.png" width="42" height="42">
-                            ${jugador.nom}<br>
-                        </c:forEach>
-                        <input type="hidden" id="partida" name="espera" value="comencar">
-                        <button type="submit" class="btn btn-primary"
-                                <c:if test = "${!jugador.creador}">
-                                    disabled
-                                </c:if> 
-                                >Començar!</button>
+                        Partida: <p class="bg-dark text-light">${partida.idSessio}</p>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">#<E/th>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Nom</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                    <c:forEach items = "${partida.jugadors}" var="jugador">   
+                                        <tr>
+                                            <th scope="row">x</th> 
+                                            <td>
+                                                <img src="resources/img/hippiicons/<c:out value="${jugador.avatar}"/>.png" width="42" height="42">
+                                            </td><td>
+                                                ${jugador.nom}  
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                        </table>  
+                        <br>
+                        <a href="${pageContext.request.contextPath}/JocControler?accio=refrescar" class="btn btn-info">Refrescar</a>
+                        <c:if test = "${jugador.creador}">
+                            <a href="${pageContext.request.contextPath}/JocControler?accio=comencar" class="btn btn-primary">Començar</a>
+                        </c:if> 
                     </div>			
                 </div>		
             </div> 

@@ -12,12 +12,16 @@
     </head>
     <body>
         <form action="${pageContext.request.contextPath}/JocControler" method="post">
-            <div class="container">
+        <jsp:include page="WEB-INF/comuns/capcalera.jsp"/>   
+        <h4 class="text-center">3.Unió a partida nova</h4>
+                <br>
+        <div class="section m-2 p-2 border text-center">
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
                             <label>Codi de partida</label>
-                            <input type="text" class="form-control" id="partida" name ="partida" placeholder="Introdueix el codi de la partida">
+                            <input type="text" class="form-control" id="idSessio" name ="idSessio" placeholder="Introdueix el codi de la partida">
+                            <input type="hidden" id="crear" name="crear" value="false">
                             <button type="submit" class="btn btn-primary">Enviar</button>
                         </div>
                     </div>		

@@ -1,6 +1,7 @@
 package controler;
 
 import datos.JugadorDaoJDBC;
+import datos.JugadorPartidaDaoJDBC;
 import datos.PartidaDaoJDBC;
 import java.io.IOException;
 import java.util.List;
@@ -23,59 +24,83 @@ public class JocControler extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //Si hem creat una nova partida
         System.out.println("GET - JOC CONTROLER");
-        request.getRequestDispatcher("esperar.jsp").forward(request, response);
+        String accio = request.getParameter("accio");
+        if (accio.equals("refrescar")) {
+            actualitzarJugadorsPartida(this.partida);
+            //Actualitzam les variables de sessio   
+            HttpSession session = request.getSession();
+            session.setAttribute("jugador", this.jugador);
+            session.setAttribute("partida", this.partida);
+            request.getRequestDispatcher("esperar.jsp").forward(request, response);
+        }
+        if (accio.equals("comencar")){
+              request.getRequestDispatcher("joc.jsp").forward(request, response);          
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("POST - JOC CONTROLER");
+
+        //if (request.getParameterMap().containsKey("idSessio")) {
+        String idSessio = request.getParameter("idSessio");
+        String crear = request.getParameter("crear");
+        System.out.println("IDSESSION - JOC CONTROLER:" + idSessio);
+        System.out.println("IDSESSION - JOC CONTROLER:" + crear);
         //Si s'ha creat una partida
-        if (request.getParameterMap().containsKey("partida")) {
-            System.out.println("partida" + request.getParameter("partida"));
-            String partida = request.getParameter("partida");
-            if (request.getParameter("partida").equals("0")) {
-                System.out.println("Creador de partida");
-            } else {
-                String idSession = request.getParameter("partida");
-                unirPartida(idSession, request);                
-            }
-            request.getRequestDispatcher("esperar.jsp").forward(request, response);
+        if (crear.equals("true")) {
+            System.out.println("POST - JOC CONTROLER - Creador de partida - " + idSessio);
+            gestioPartida(idSessio, request, true);
+        } else {
+            System.out.println("POST - JOC CONTROLER - Unir-se a partida - " + idSessio);
+            gestioPartida(idSessio, request, false);
         }
+        request.getRequestDispatcher("esperar.jsp").forward(request, response);
+        //} else {
+        //    System.out.println("POST - JOC CONTROLER - NO PARTIDA");
+        //}
     }
 
-    public void unirPartida(String idSession, HttpServletRequest request) {
-        HttpSession session = request.getSession(); 
-        //Cercam la partida dins la BD on tengi l'ID que ens ha passat per formulari
-        this.partida = new PartidaDaoJDBC().consultarIdSessio(idSession);   
+    public void gestioPartida(String idSessio, HttpServletRequest request, boolean creador) {
+        String idSessioJug = "";
+        if (creador) {
+            this.partida = new Partida(idSessio);
+            new PartidaDaoJDBC().insertar(this.partida);
+        } else {
+            //Cercam la partida dins la BD on tengi l'ID que ens ha passat per formulari
+            this.partida = new PartidaDaoJDBC().consultaPartida(idSessio);
+            idSessioJug = request.getSession().getId();
+        }
         //Ara hem d'afegir l'usuari a la partida, però pensem que és una variable de sessio
-        this.jugador = new Jugador();     
+        //Per tant, capturam les seves dades introduides i les tractam
+        HttpSession session = request.getSession();
+        this.jugador = new Jugador();
         this.jugador = (Jugador) session.getAttribute("jugador");
-        this.jugador.setCreador(false);
-        this.jugador.setIdPartida(idSession);
+        //Indicam qui es el creador
+        this.jugador.setCreador(creador);
+        //Indicam a quina partida pertany
+        if (creador) {
+            this.jugador.setIdSessio(idSessio);
+        } else {
+            this.jugador.setIdSessio(idSessioJug);
+        }
         //Afegim els jugadors que hi ha a la partida
-        afegirJugadorsPartida(this.partida);
+        this.partida.afegeixJugador(jugador);
         //Enmagatzemam el jugador a la BD
         new JugadorDaoJDBC().insertar(this.jugador);
+        //Hem d'actualitzar la taula jugador-partida
+        new JugadorPartidaDaoJDBC().insertar(this.jugador, this.partida);
         //Actualitzam les variables de sessio          
         session.setAttribute("jugador", this.jugador);
         session.setAttribute("partida", this.partida);
     }
 
-    public void afegirJugadorsPartida(Partida partida) {
+    public void actualitzarJugadorsPartida(Partida partida) {
         //Hem de revisar tots els jugadors de la BD a quina partida estan i afegir-los a la 
         //Classe partida que tenim en marxa
-        List<Jugador> jugadors = new JugadorDaoJDBC().listar();
-        for (Jugador jugador : jugadors) {
-            String idSession = jugador.getIdPartida();
-            if (partida.getIdSessio().equals(idSession)) {
-                //Afegim aquest jugador a la partida
-                partida.afegeixJugador(jugador);
-                System.out.println("Jugador" + jugador);
-            }
-        }
-        //Afegim també el jugador en curs
-        partida.afegeixJugador(this.jugador);
-
+        List<Jugador> jugadors = new JugadorPartidaDaoJDBC().listarJugadors(partida);
+        System.out.println("Jugadors: " + jugadors);
+        partida.actualitzaJugadors(jugadors);
     }
 
 }
