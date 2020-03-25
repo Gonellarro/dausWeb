@@ -25,16 +25,35 @@ public class JocControler extends HttpServlet {
         //Si hem creat una nova partida
         System.out.println("GET - JOC CONTROLER");
         String accio = request.getParameter("accio");
-        if (accio.equals("refrescar")) {
-            actualitzarJugadorsPartida(this.partida);
-            //Actualitzam les variables de sessio   
-            HttpSession session = request.getSession();
-            session.setAttribute("jugador", this.jugador);
-            session.setAttribute("partida", this.partida);
-            request.getRequestDispatcher("esperar.jsp").forward(request, response);
-        }
-        if (accio.equals("comencar")){
-              request.getRequestDispatcher("joc.jsp").forward(request, response);          
+        switch (accio) {
+            case "refrescar":
+
+                actualitzarJugadorsPartida(this.partida);
+                //Collim s'estat de sa partida de la BD
+                Partida partidaAux = new PartidaDaoJDBC().consultaPartida(this.partida.getIdSessio());
+                HttpSession session = request.getSession();
+                if (partidaAux.isEnMarxa()) {
+                    this.partida.setEnMarxa(true);
+                    //Actualitzam les variables de sessio   
+                    session.setAttribute("partida", this.partida);
+                    request.getRequestDispatcher("joc.jsp").forward(request, response);
+                } else {
+                    //Actualitzam les variables de sessio   
+                    session.setAttribute("partida", this.partida);
+                    request.getRequestDispatcher("esperar.jsp").forward(request, response);
+                }
+
+                break;
+            case "comencar":
+
+                this.partida.setEnMarxa(true);
+                new PartidaDaoJDBC().actualizar(this.partida);
+                request.getRequestDispatcher("joc.jsp").forward(request, response);
+
+                break;
+            default:
+                break;
+
         }
     }
 
@@ -56,9 +75,6 @@ public class JocControler extends HttpServlet {
             gestioPartida(idSessio, request, false);
         }
         request.getRequestDispatcher("esperar.jsp").forward(request, response);
-        //} else {
-        //    System.out.println("POST - JOC CONTROLER - NO PARTIDA");
-        //}
     }
 
     public void gestioPartida(String idSessio, HttpServletRequest request, boolean creador) {
