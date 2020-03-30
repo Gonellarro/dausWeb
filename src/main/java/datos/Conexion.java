@@ -6,7 +6,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 public class Conexion {
 
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/daus?zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&useTimezone=true&Timezone=UTC";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/daus?zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false&useTimezon=true&serverTimezone=UTC";
     private static final String JDBC_USER = "admin";
     private static final String JDBC_PASSWORD = "admin";
 

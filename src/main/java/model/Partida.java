@@ -15,10 +15,15 @@ public class Partida {
 
     public Partida(String id) {
         this.punts = 0;
-        this.idSessio = id;
+        this.idSessio = id; 
         totalPartides++;
         this.jugadors = new ArrayList<Jugador>();
         this.maxJugadors = 99;
+    }
+
+    @Override
+    public String toString() {
+        return "Partida{" + "punts=" + punts + ", idSessio=" + idSessio + ", enMarxa=" + enMarxa + ", jugadors=" + jugadors + ", maxJugadors=" + maxJugadors + ", titol=" + titol + '}';
     }
 
     public int getPunts() {

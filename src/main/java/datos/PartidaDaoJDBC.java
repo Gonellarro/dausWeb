@@ -46,6 +46,7 @@ public class PartidaDaoJDBC{
         PreparedStatement stmt = null;
         int row = 0;
         System.out.println("INSERTAR PARTIDA - PARTIDADAOJDBC");
+        System.out.println("Partida:" + partida);
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
