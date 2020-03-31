@@ -5,49 +5,25 @@ import java.util.List;
 
 public class Partida {
 
-    private static int totalPartides = 0;
-    private int punts;
     private String idSessio;
     private boolean enMarxa;
+    private boolean tancada;
     private List<Jugador> jugadors;
-    private int maxJugadors;
     private String titol;
 
     public Partida(String id) {
-        this.punts = 0;
         this.idSessio = id; 
-        totalPartides++;
         this.jugadors = new ArrayList<Jugador>();
-        this.maxJugadors = 99;
+        this.tancada = false;
     }
 
-    @Override
-    public String toString() {
-        return "Partida{" + "punts=" + punts + ", idSessio=" + idSessio + ", enMarxa=" + enMarxa + ", jugadors=" + jugadors + ", maxJugadors=" + maxJugadors + ", titol=" + titol + '}';
-    }
-
-    public int getPunts() {
-        return punts;
-    }
-
-    public void setPunts(int punts) {
-        this.punts = punts;
-    }
-
+ 
     public String getIdSessio() {
         return idSessio;
     }
 
     public void setIdSessio(String idSessio) {
         this.idSessio = idSessio;
-    }
-
-    public static int getTotalPartides() {
-        return totalPartides;
-    }
-
-    public static void setTotalPartides(int aTotalPartides) {
-        totalPartides = aTotalPartides;
     }
 
     public boolean isEnMarxa() {
@@ -66,13 +42,6 @@ public class Partida {
         this.jugadors = jugadors;
     }
 
-    public int getMaxJugadors() {
-        return maxJugadors;
-    }
-
-    public void setMaxJugadors(int maxJugadors) {
-        this.maxJugadors = maxJugadors;
-    }
 
     public String getTitol() {
         return titol;
@@ -81,7 +50,15 @@ public class Partida {
     public void setTitol(String titol) {
         this.titol = titol;
     }
+    
+    public boolean isTancada() {
+        return tancada;
+    }
 
+    public void setTancada(boolean tancada) {
+        this.tancada = tancada;
+    }
+    
     public void afegeixJugador(Jugador jugador) {
         this.jugadors.add(jugador);
     }
@@ -97,5 +74,7 @@ public class Partida {
         }
         System.out.println("Jugadors insertats: " + this.jugadors);
     }
+
+
 
 }

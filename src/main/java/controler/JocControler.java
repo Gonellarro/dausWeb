@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import model.Joc;
 import model.Jugador;
 import model.Partida;
 
@@ -19,18 +20,21 @@ public class JocControler extends HttpServlet {
 
     private Partida partida;
     private Jugador jugador;
+    private Joc joc;
+    private int ronda;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         //Si hem creat una nova partida
         System.out.println("GET - JOC CONTROLER");
+        boolean llancat = false;
         String accio = request.getParameter("accio");
         switch (accio) {
             case "refrescar":
-
                 actualitzarJugadorsPartida(this.partida);
                 //Collim s'estat de sa partida de la BD
                 Partida partidaAux = new PartidaDaoJDBC().consultaPartida(this.partida.getIdSessio());
+                request.setAttribute("llancat", llancat);
                 HttpSession session = request.getSession();
                 if (partidaAux.isEnMarxa()) {
                     this.partida.setEnMarxa(true);
@@ -42,18 +46,29 @@ public class JocControler extends HttpServlet {
                     session.setAttribute("partida", this.partida);
                     request.getRequestDispatcher("esperar.jsp").forward(request, response);
                 }
-
                 break;
             case "comencar":
-
+                System.out.println("GET - COMENCAR - JOC CONTROLER");
                 this.partida.setEnMarxa(true);
                 new PartidaDaoJDBC().actualizar(this.partida);
+                this.ronda = 1;
+                request.setAttribute("llancat", llancat);
                 request.getRequestDispatcher("joc.jsp").forward(request, response);
-
+                break;
+            case "llancar":
+                System.out.println("GET - LLANCAR - JOC CONTROLER");
+                int valorDau = jocNou();
+                llancat = true;
+                request.setAttribute("llancat", llancat);
+                request.setAttribute("valorDau", valorDau);
+                request.getRequestDispatcher("joc.jsp").forward(request, response);
+                break;
+            case "continuar":
+                acutalitzarDadesJugador();
+                request.getRequestDispatcher("estadistiques.jsp").forward(request, response);
                 break;
             default:
                 break;
-
         }
     }
 
@@ -61,22 +76,26 @@ public class JocControler extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("POST - JOC CONTROLER");
 
-        //if (request.getParameterMap().containsKey("idSessio")) {
-        String idSessio = request.getParameter("idSessio");
-        String crear = request.getParameter("crear");
-        System.out.println("IDSESSION - JOC CONTROLER:" + idSessio);
-        System.out.println("IDSESSION - JOC CONTROLER:" + crear);
-        //Si s'ha creat una partida
-        if (crear.equals("true")) {
-            System.out.println("POST - JOC CONTROLER - Creador de partida - " + idSessio);
-            gestioPartida(idSessio, request, true);
-        } else {
-            System.out.println("POST - JOC CONTROLER - Unir-se a partida - " + idSessio);
-            gestioPartida(idSessio, request, false);
+        if (request.getParameterMap().containsKey("idSessio")) {
+            String idSessio = request.getParameter("idSessio");
+            if (request.getParameterMap().containsKey("crear")) {
+                String crear = request.getParameter("crear");
+                //Si s'ha creat una partida
+                if (crear.equals("true")) {
+                    gestioPartida(idSessio, request, true);
+                } else {
+                    gestioPartida(idSessio, request, false);
+                }
+                request.getRequestDispatcher("esperar.jsp").forward(request, response);
+            }
+            else{
+                System.out.println("POST - JOC CONTROLER - No s'ha passat CREAR");
+            }
+            System.out.println("POST - JOC CONTROLER - No s'ha passat IDSESSIO");
         }
-        request.getRequestDispatcher("esperar.jsp").forward(request, response);
     }
 
+    
     public void gestioPartida(String idSessio, HttpServletRequest request, boolean creador) {
         String idSessioJug = "";
         if (creador) {
@@ -119,4 +138,15 @@ public class JocControler extends HttpServlet {
         partida.actualitzaJugadors(jugadors);
     }
 
+    public int jocNou() {
+        this.joc = new Joc();
+        this.joc.setPartida(this.partida);
+        this.joc.llancarDaus(this.jugador);
+        return this.jugador.getValorDau();
+    }
+
+    public void acutalitzarDadesJugador() {
+        this.ronda++;
+
+    }
 }

@@ -28,7 +28,6 @@ public class PartidaDaoJDBC{
 
                 partida = new Partida(idSessio);
                 partida.setEnMarxa(enMarxa);
-                partida.setPunts(punts);
                 partides.add(partida);
             }
         } catch (SQLException ex) {
@@ -50,7 +49,6 @@ public class PartidaDaoJDBC{
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, partida.getPunts());
             stmt.setString(2, partida.getIdSessio());
             stmt.setBoolean(3, partida.isEnMarxa());
             row = stmt.executeUpdate();
@@ -78,7 +76,6 @@ public class PartidaDaoJDBC{
                 boolean enMarxa = rs.getBoolean("enMarxa");
                 partida = new Partida(idSessio);
                 partida.setEnMarxa(enMarxa);
-                partida.setPunts(punts);
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -97,7 +94,6 @@ public class PartidaDaoJDBC{
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_UPDATE);
-            stmt.setInt(1, partida.getPunts());
             stmt.setBoolean(2, partida.isEnMarxa());
             stmt.setString(3, partida.getIdSessio());
             rows = stmt.executeUpdate();

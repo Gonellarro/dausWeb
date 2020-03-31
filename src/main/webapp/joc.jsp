@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!doctype html>
 <html lang="en">
     <head>
@@ -19,10 +20,14 @@
         <div class="section m-2 p-2 border text-center">
             <div class="row">
                 <div class="col-sm-4 offset-sm-4">
-                    Hola ${jugador.nom}, tira el dau<br>
-                    <h1 class="display-1 text-primary" id="dau"></h1>
-                    <button onClick="llancarDau()" class="btn btn-primary" id="llancar">Llancar!</button>
-                    <button onClick="location.href='${pageContext.request.contextPath}/JocControler?accio='" class="btn btn-success" id="continuar" disabled value="">Continuar</button>
+                    <c:if test = "${llancat}">
+                        <h1 class="display-1 text-primary" id="dau">${valorDau}</h1>    
+                        <button onClick="location.href='${pageContext.request.contextPath}/JocControler?accio=continuar'" class="btn btn-primary" id="continuar" value="">Continuar</button>
+                    </c:if> 
+                    <c:if test = "${!llancat}">
+                        Hola ${jugador.nom}, tira el dau<br>
+                        <button onClick="location.href='${pageContext.request.contextPath}/JocControler?accio=llancar'" class="btn btn-success" id="llancar" value="">Llançar!</button>
+                    </c:if> 
                 </div>
             </div>
         </div>

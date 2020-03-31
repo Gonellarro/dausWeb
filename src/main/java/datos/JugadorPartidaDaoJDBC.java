@@ -10,7 +10,7 @@ public class JugadorPartidaDaoJDBC {
     private static final String SQL_SELECT_BY_JUGADOR = "SELECT idPartida FROM jugadorpartida where idJugador = ?";
     private static final String SQL_SELECT_BY_PARTIDA = "SELECT idJugador FROM jugadorpartida WHERE idPartida = ?";
     private static final String SQL_INSERT = "INSERT INTO jugadorpartida (idJugador, idPartida, creador) VALUES(?, ?, ?)";
-    private static final String SQL_UPDATE = "UPDATE jugadorpartida SET idJugador=?, creador=? WHERE idPartida=?";
+    private static final String SQL_UPDATE = "UPDATE jugadorpartida SET punts=? WHERE idPartida=? AND idJugador=?";
 
     public List<Jugador> listarJugadors(Partida partida) {
         Connection conn = null;

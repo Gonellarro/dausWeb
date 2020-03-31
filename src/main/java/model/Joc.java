@@ -4,13 +4,10 @@ public class Joc {
 
     
     private Dau dau;
-    private Jugador torn;
     private Partida partida;
 
     public Joc() {
         this.dau = new Dau();
-        this.torn = null;
-        this.partida = null;
     }
 
     public Dau getDau() {
@@ -21,14 +18,6 @@ public class Joc {
         this.dau = dau;
     }
 
-    public Jugador getTorn() {
-        return torn;
-    }
-
-    public void setTorn(Jugador torn) {
-        this.torn = torn;
-    }
-
     public Partida getPartida() {
         return partida;
     }
@@ -36,8 +25,8 @@ public class Joc {
     public void setPartida(Partida partida) {
         this.partida = partida;
     }
-
-    public void tirarDau(Jugador jugador) {
+  
+    public void llancarDaus(Jugador jugador) {
         jugador.setValorDau(this.dau.llancar());
     }
 }
