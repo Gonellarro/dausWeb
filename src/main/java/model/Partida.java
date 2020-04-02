@@ -5,25 +5,25 @@ import java.util.List;
 
 public class Partida {
 
-    private String idSessio;
+    private int hashPartida;
     private boolean enMarxa;
     private boolean tancada;
     private List<Jugador> jugadors;
     private String titol;
 
-    public Partida(String id) {
-        this.idSessio = id; 
+    public Partida(int id) {
+        this.hashPartida = id; 
         this.jugadors = new ArrayList<Jugador>();
         this.tancada = false;
     }
 
  
-    public String getIdSessio() {
-        return idSessio;
+    public int getHashPartida() {
+        return hashPartida;
     }
 
-    public void setIdSessio(String idSessio) {
-        this.idSessio = idSessio;
+    public void setHashPartida(int hashPartida) {
+        this.hashPartida = hashPartida;
     }
 
     public boolean isEnMarxa() {
@@ -66,13 +66,10 @@ public class Partida {
     public void actualitzaJugadors(List<Jugador> jugadors){
         //Netejam la llista
         this.jugadors.clear();
-        System.out.println("Jugadors nets:" + jugadors);
         //Posam tots els jugadors que ens passen per actualitzar
         for(Jugador j : jugadors){
-            System.out.println("Insertant jugador:" + j );
             this.jugadors.add(j);
         }
-        System.out.println("Jugadors insertats: " + this.jugadors);
     }
 
 

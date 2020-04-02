@@ -6,10 +6,10 @@ import model.Partida;
 
 public class PartidaDaoJDBC{
 
-    private static final String SQL_SELECT = "SELECT punts, idSession, enMarxa FROM partida";
-    private static final String SQL_SELECT_BY_ID = "SELECT punts, enMarxa FROM partida WHERE idSession = ?";
-    private static final String SQL_INSERT = "INSERT INTO partida (punts, idSession, enMarxa) VALUES(?, ?, ?)";
-    private static final String SQL_UPDATE = "UPDATE partida SET punts=?, enMarxa=? WHERE idSession=?";
+    private static final String SQL_SELECT = "SELECT hashPartida, enMarxa, tancada FROM partida";
+    private static final String SQL_SELECT_BY_ID = "SELECT enMarxa, tancada FROM partida WHERE hashPartida = ?";
+    private static final String SQL_INSERT = "INSERT INTO partida (hashPartida, enMarxa, tancada) VALUES(?, ?, ?)";
+    private static final String SQL_UPDATE = "UPDATE partida SET enMarxa=?, tancada=? WHERE hashPartida=?";
 
     public List<Partida> listar() {
         Connection conn = null;
@@ -22,12 +22,13 @@ public class PartidaDaoJDBC{
             stmt = conn.prepareStatement(SQL_SELECT);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                String idSessio = rs.getString("idSession");
-                int punts = rs.getInt("punts");
+                int hashPartida = rs.getInt("hashPartida");
                 boolean enMarxa = rs.getBoolean("enMarxa");
+                boolean tancada = rs.getBoolean("tancada");
 
-                partida = new Partida(idSessio);
+                partida = new Partida(hashPartida);
                 partida.setEnMarxa(enMarxa);
+                partida.setTancada(tancada);
                 partides.add(partida);
             }
         } catch (SQLException ex) {
@@ -49,8 +50,9 @@ public class PartidaDaoJDBC{
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(2, partida.getIdSessio());
-            stmt.setBoolean(3, partida.isEnMarxa());
+            stmt.setInt(1, partida.getHashPartida());
+            stmt.setBoolean(2, partida.isEnMarxa());
+            stmt.setBoolean(3, partida.isTancada());
             row = stmt.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -60,7 +62,7 @@ public class PartidaDaoJDBC{
         }
     }
 
-    public Partida consultaPartida(String idSessio) {
+    public Partida consultaPartida(int hashPartida) {
         Partida partida = null;
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -69,13 +71,14 @@ public class PartidaDaoJDBC{
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_BY_ID);
-            stmt.setString(1, idSessio);
+            stmt.setInt(1, hashPartida);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                int punts = rs.getInt("punts");
                 boolean enMarxa = rs.getBoolean("enMarxa");
-                partida = new Partida(idSessio);
+                boolean tancada = rs.getBoolean("tancada");
+                partida = new Partida(hashPartida);
                 partida.setEnMarxa(enMarxa);
+                partida.setTancada(tancada);
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -85,7 +88,7 @@ public class PartidaDaoJDBC{
             Conexion.close(conn);
         }
         return partida;
-    }
+    }   
 
     public void actualizar(Partida partida) {
         Connection conn = null;
@@ -94,8 +97,9 @@ public class PartidaDaoJDBC{
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_UPDATE);
-            stmt.setBoolean(2, partida.isEnMarxa());
-            stmt.setString(3, partida.getIdSessio());
+            stmt.setBoolean(1, partida.isEnMarxa());
+            stmt.setBoolean(2, partida.isTancada());
+            stmt.setInt(3, partida.getHashPartida());
             rows = stmt.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -103,7 +107,6 @@ public class PartidaDaoJDBC{
             Conexion.close(stmt);
             Conexion.close(conn);
         }
-        //return rows;
     }
 
 }

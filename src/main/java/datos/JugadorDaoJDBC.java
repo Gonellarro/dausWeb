@@ -7,10 +7,10 @@ import model.Partida;
 
 public class JugadorDaoJDBC{
 
-    private static final String SQL_SELECT = "SELECT nom, avatar, idSession FROM jugador";
-    private static final String SQL_SELECT_BY_ID = "SELECT nom, avatar FROM jugador WHERE idSession = ?";
-    private static final String SQL_INSERT = "INSERT INTO jugador (nom, avatar, idSession) VALUES(?, ?, ?)";
-    private static final String SQL_UPDATE = "UPDATE jugador SET nom=?, avatar=? WHERE idSession=?";
+    private static final String SQL_SELECT = "SELECT nom, avatar, hashJugador FROM jugador";
+    private static final String SQL_SELECT_BY_ID = "SELECT nom, avatar FROM jugador WHERE hashJugador = ?";
+    private static final String SQL_INSERT = "INSERT INTO jugador (nom, avatar, hashJugador) VALUES(?, ?, ?)";
+    private static final String SQL_UPDATE = "UPDATE jugador SET nom=?, avatar=? WHERE hashJugador=?";
 
     public List<Jugador> listar() {
         Connection conn = null;
@@ -25,12 +25,12 @@ public class JugadorDaoJDBC{
             while (rs.next()) {
                 String nom = rs.getString("nom");
                 String avatar = rs.getString("avatar");
-                String idSession = rs.getString("idSession");
+                int hashJugador = rs.getInt("hashJugador");
 
                 jugador = new Jugador();
                 jugador.setNom(nom);
                 jugador.setAvatar(avatar);
-                jugador.setIdSessio(idSession);
+                jugador.setHashJugador(hashJugador);
                 jugadors.add(jugador);
             }
         } catch (SQLException ex) {
@@ -79,7 +79,7 @@ public class JugadorDaoJDBC{
             stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, jugador.getNom());
             stmt.setString(2, jugador.getAvatar());
-            stmt.setString(3, jugador.getIdSessio());
+            stmt.setInt(3, jugador.getHashJugador());
             row = stmt.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -98,7 +98,7 @@ public class JugadorDaoJDBC{
             stmt = conn.prepareStatement(SQL_UPDATE);
             stmt.setString(1, jugador.getNom());
             stmt.setString(2, jugador.getAvatar());
-            stmt.setString(3, jugador.getIdSessio());
+            stmt.setInt(3, jugador.getHashJugador());
             rows = stmt.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);

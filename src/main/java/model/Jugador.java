@@ -3,13 +3,13 @@ package model;
 public class Jugador {
     private String nom;
     private String avatar;
-    private String idSessio;
+    private int hashJugador;
     private boolean creador;
     private int valorDau;
     
     public Jugador(){
         this.avatar = "default";
-        this.idSessio = "";
+        this.hashJugador = 0;
         this.creador = false;
         this.valorDau = 0;
     }
@@ -30,12 +30,12 @@ public class Jugador {
         this.avatar = avatar;
     }
 
-    public String getIdSessio() {
-        return idSessio;
+    public int getHashJugador() {
+        return hashJugador;
     }
 
-    public void setIdSessio(String idSessio) {
-        this.idSessio = idSessio;
+    public void setHashJugador(int hashJugador) {
+        this.hashJugador = hashJugador;
     }
 
     public boolean isCreador() {
@@ -52,6 +52,11 @@ public class Jugador {
 
     public void setValorDau(int valorDau) {
         this.valorDau = valorDau;
+    }
+
+    @Override
+    public String toString() {
+        return "Jugador{" + "nom=" + nom + ", avatar=" + avatar + ", hashJugador=" + hashJugador + ", creador=" + creador + ", valorDau=" + valorDau + '}';
     }
     
     

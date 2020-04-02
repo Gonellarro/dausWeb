@@ -22,7 +22,7 @@
             <div class="section m-2 p-2 border text-center">
                 <div class="row">
                     <div class="col-12 col-md-4">
-                        Partida: <p class="bg-dark text-light">${partida.idSessio}</p>
+                        Partida: <p class="bg-dark text-light">${partida.hashPartida}</p>
 
                         <table class="table table-striped">
                             <thead>

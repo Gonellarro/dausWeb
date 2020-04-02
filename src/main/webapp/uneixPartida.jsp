@@ -20,7 +20,7 @@
                     <div class="col-12">
                         <div class="form-group">
                             <label>Codi de partida</label>
-                            <input type="text" class="form-control" id="idSessio" name ="idSessio" placeholder="Introdueix el codi de la partida">
+                            <input type="text" class="form-control" id="partida" name ="partida" placeholder="Introdueix el codi de la partida">
                             <input type="hidden" id="crear" name="crear" value="false">
                             <button type="submit" class="btn btn-primary">Enviar</button>
                         </div>

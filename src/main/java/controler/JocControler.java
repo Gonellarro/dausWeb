@@ -21,50 +21,60 @@ public class JocControler extends HttpServlet {
     private Partida partida;
     private Jugador jugador;
     private Joc joc;
-    private int ronda;
+    private static int ronda;
+    private static int punts;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //Si hem creat una nova partida
         System.out.println("GET - JOC CONTROLER");
+        HttpSession session = request.getSession();
+        this.jugador = (Jugador) session.getAttribute("jugador");
+        this.partida = (Partida) session.getAttribute("partida");
+
+        System.out.println("Partida: " + this.partida.getHashPartida());
+        System.out.println("Jugador: " + this.jugador.getNom());
+
         boolean llancat = false;
         String accio = request.getParameter("accio");
         switch (accio) {
             case "refrescar":
+                //Primer actualitzam tots els jugadors que hi ha a la partida
                 actualitzarJugadorsPartida(this.partida);
-                //Collim s'estat de sa partida de la BD
-                Partida partidaAux = new PartidaDaoJDBC().consultaPartida(this.partida.getIdSessio());
-                request.setAttribute("llancat", llancat);
-                HttpSession session = request.getSession();
-                if (partidaAux.isEnMarxa()) {
+                //Si el creador ha començat i ha tancat la partida
+                Partida partidaAux = new PartidaDaoJDBC().consultaPartida(this.partida.getHashPartida());
+                if (partidaAux.isTancada()) {
+                    this.partida.setTancada(true);
                     this.partida.setEnMarxa(true);
-                    //Actualitzam les variables de sessio   
-                    session.setAttribute("partida", this.partida);
                     request.getRequestDispatcher("joc.jsp").forward(request, response);
                 } else {
-                    //Actualitzam les variables de sessio   
-                    session.setAttribute("partida", this.partida);
+                    //Si no està encara tancada
+                    this.partida.setTancada(false);
+                    this.partida.setEnMarxa(true);
                     request.getRequestDispatcher("esperar.jsp").forward(request, response);
                 }
                 break;
             case "comencar":
-                System.out.println("GET - COMENCAR - JOC CONTROLER");
-                this.partida.setEnMarxa(true);
+                //Se comença la partida per part del creador
+                //La tancam i l'actualitzam a la BD
+                this.partida.setTancada(true);
                 new PartidaDaoJDBC().actualizar(this.partida);
-                this.ronda = 1;
+                //Indicam que encara no hem llançat
+                llancat = false;
                 request.setAttribute("llancat", llancat);
                 request.getRequestDispatcher("joc.jsp").forward(request, response);
                 break;
             case "llancar":
-                System.out.println("GET - LLANCAR - JOC CONTROLER");
-                int valorDau = jocNou();
+                //Hem de llancar, per això feim un joc nou
+                this.punts = jocNou();
                 llancat = true;
+                new JugadorPartidaDaoJDBC().actualizar(this.jugador, this.partida, this.punts, this.ronda);
                 request.setAttribute("llancat", llancat);
-                request.setAttribute("valorDau", valorDau);
+                request.setAttribute("valorDau", this.punts);
                 request.getRequestDispatcher("joc.jsp").forward(request, response);
                 break;
             case "continuar":
-                acutalitzarDadesJugador();
+                this.ronda++;
+
                 request.getRequestDispatcher("estadistiques.jsp").forward(request, response);
                 break;
             default:
@@ -75,58 +85,74 @@ public class JocControler extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("POST - JOC CONTROLER");
+        HttpSession session = request.getSession();
+        this.jugador = (Jugador) session.getAttribute("jugador");
+        String jsp = creaUneix(request, session);
+        request.getRequestDispatcher(jsp).forward(request, response);
+    }
 
-        if (request.getParameterMap().containsKey("idSessio")) {
-            String idSessio = request.getParameter("idSessio");
+    public String creaUneix(HttpServletRequest request, HttpSession session) {
+        //Miram si hi hem passat la partida
+        String jsp = "";
+        //Si hem rebut la variable partida
+        if (request.getParameterMap().containsKey("partida")) {
+            int hashPartida = Integer.parseInt(request.getParameter("partida"));
+            System.out.println("Partida: " + hashPartida);
+            //Miram si hem rebut la variable crear
             if (request.getParameterMap().containsKey("crear")) {
                 String crear = request.getParameter("crear");
-                //Si s'ha creat una partida
+                //Si s'ha de creat una partida
                 if (crear.equals("true")) {
-                    gestioPartida(idSessio, request, true);
+                    this.partida = new Partida(hashPartida);
+                    gestioPartida(request, session, true);
+                    jsp = "esperar.jsp";
                 } else {
-                    gestioPartida(idSessio, request, false);
+                    //Hem de revisar que no estigui tancada
+                    //Collim les dades de la partida de la BD
+                    this.partida = new PartidaDaoJDBC().consultaPartida(hashPartida);
+                    //Si no està tancada
+                    if (!this.partida.isTancada()) {
+                        //També hem de revisar que estigui en marxa
+                        if (this.partida.isEnMarxa()) {
+                            gestioPartida(request, session, false);
+                            jsp = "esperar.jsp";;
+                        } else {
+                            //Ho hem d'enviar a un jsp de partida encara no en marxa
+                            jsp = "error.jsp";
+                        }
+                    } else {
+                        //Ho hem d'enviar a un jsp de partida tancada
+                        System.out.println("Partida tancada");
+                        jsp = "error.jsp";
+                    }
                 }
-                request.getRequestDispatcher("esperar.jsp").forward(request, response);
-            }
-            else{
+                //O ens hem d'unir
+            } else {
                 System.out.println("POST - JOC CONTROLER - No s'ha passat CREAR");
             }
             System.out.println("POST - JOC CONTROLER - No s'ha passat IDSESSIO");
         }
+        return jsp;
     }
 
-    
-    public void gestioPartida(String idSessio, HttpServletRequest request, boolean creador) {
-        String idSessioJug = "";
-        if (creador) {
-            this.partida = new Partida(idSessio);
-            new PartidaDaoJDBC().insertar(this.partida);
-        } else {
-            //Cercam la partida dins la BD on tengi l'ID que ens ha passat per formulari
-            this.partida = new PartidaDaoJDBC().consultaPartida(idSessio);
-            idSessioJug = request.getSession().getId();
-        }
-        //Ara hem d'afegir l'usuari a la partida, però pensem que és una variable de sessio
-        //Per tant, capturam les seves dades introduides i les tractam
-        HttpSession session = request.getSession();
-        this.jugador = new Jugador();
-        this.jugador = (Jugador) session.getAttribute("jugador");
-        //Indicam qui es el creador
+    public void gestioPartida(HttpServletRequest request, HttpSession session, boolean creador) {
+
         this.jugador.setCreador(creador);
-        //Indicam a quina partida pertany
         if (creador) {
-            this.jugador.setIdSessio(idSessio);
-        } else {
-            this.jugador.setIdSessio(idSessioJug);
+            //El creador ha de posar la partida com no tancada i en marxa
+            this.partida.setEnMarxa(true);
+            this.partida.setTancada(false);
+            new PartidaDaoJDBC().insertar(this.partida);
+            //Hem d'actualitzar la taula jugador-partida punts=0, ronda=1
+            this.ronda = 1;
+            this.punts = 0;
+            System.out.println("*Jugador: " + this.jugador);
         }
-        //Afegim els jugadors que hi ha a la partida
-        this.partida.afegeixJugador(jugador);
-        //Enmagatzemam el jugador a la BD
-        new JugadorDaoJDBC().insertar(this.jugador);
-        //Hem d'actualitzar la taula jugador-partida
-        new JugadorPartidaDaoJDBC().insertar(this.jugador, this.partida);
-        //Actualitzam les variables de sessio          
-        session.setAttribute("jugador", this.jugador);
+        //Per cada jugador, sigui creador o no, l'hem d'afegir a la taula jugadorpartida
+        new JugadorPartidaDaoJDBC().insertar(this.jugador, this.partida, this.punts, this.ronda);
+        //Actualitzam els jugadors a la variable de sessio partida
+        actualitzarJugadorsPartida(this.partida);
+        //Feim partida com a variable de sessio   
         session.setAttribute("partida", this.partida);
     }
 
@@ -134,7 +160,6 @@ public class JocControler extends HttpServlet {
         //Hem de revisar tots els jugadors de la BD a quina partida estan i afegir-los a la 
         //Classe partida que tenim en marxa
         List<Jugador> jugadors = new JugadorPartidaDaoJDBC().listarJugadors(partida);
-        System.out.println("Jugadors: " + jugadors);
         partida.actualitzaJugadors(jugadors);
     }
 
@@ -143,10 +168,5 @@ public class JocControler extends HttpServlet {
         this.joc.setPartida(this.partida);
         this.joc.llancarDaus(this.jugador);
         return this.jugador.getValorDau();
-    }
-
-    public void acutalitzarDadesJugador() {
-        this.ronda++;
-
     }
 }
