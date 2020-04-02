@@ -71,6 +71,12 @@ public class Partida {
             this.jugadors.add(j);
         }
     }
+    
+    public void actualitzaDadesJugador(Jugador jugadorExtern){
+        int index = this.jugadors.indexOf(jugadorExtern);
+        System.out.println("Index: " + index);
+        System.out.println("Jugador: "+  jugadorExtern);
+    }
 
 
 

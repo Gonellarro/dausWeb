@@ -9,7 +9,7 @@ public class JugadorPartidaDaoJDBC {
 
     private static final String SQL_SELECT = "SELECT * FROM jugadorpartida where hashJugador = ? AND hashPartida = ? AND ronda = ?";
     private static final String SQL_SELECT_BY_JUGADOR = "SELECT hashPartida FROM jugadorpartida where hashJugador = ?";
-    private static final String SQL_SELECT_BY_PARTIDA = "SELECT hashJugador FROM jugadorpartida WHERE hashPartida = ?";
+    private static final String SQL_SELECT_BY_PARTIDA = "SELECT hashJugador, creador, punts FROM jugadorpartida WHERE hashPartida = ? AND ronda = ?";
     private static final String SQL_INSERT = "INSERT INTO jugadorpartida (hashJugador, hashPartida, creador, punts, ronda) VALUES(?, ?, ?, ?, ?)";
     private static final String SQL_UPDATE = "UPDATE jugadorpartida SET punts=? WHERE hashPartida=? AND hashJugador=? AND  ronda=?";
 
@@ -39,7 +39,7 @@ public class JugadorPartidaDaoJDBC {
         return punts;
     }
 
-    public List<Jugador> listarJugadors(Partida partida) {
+    public List<Jugador> listarJugadors(Partida partida, int ronda) {
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -50,12 +50,22 @@ public class JugadorPartidaDaoJDBC {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_BY_PARTIDA);
             stmt.setInt(1, partida.getHashPartida());
+            stmt.setInt(2, ronda);
+            
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                String hashJugador = rs.getString("hashJugador");
-
+                int hashJugador = rs.getInt("hashJugador");
+                int punts = rs.getInt("punts");
+                boolean creador = rs.getBoolean("creador");
+                
+                //Cercarm els nom i avatar de la BD
                 jugador = new JugadorDaoJDBC().consultaJugador(hashJugador);
+                jugador.setHashJugador(hashJugador);
+                //Assignam els punts i el creador
+                jugador.setValorDau(punts);
+                jugador.setCreador(creador);
+                //Afeguim el jugador a llistat de jugadors
                 jugadors.add(jugador);
             }
         } catch (SQLException ex) {

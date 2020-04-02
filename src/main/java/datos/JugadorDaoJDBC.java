@@ -43,7 +43,7 @@ public class JugadorDaoJDBC{
         return jugadors;
     }
     
-    public Jugador consultaJugador(String idSessio){
+    public Jugador consultaJugador(int hashJugador){
         Jugador jugador = null;
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -52,7 +52,7 @@ public class JugadorDaoJDBC{
         try {
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_BY_ID);
-            stmt.setString(1, idSessio);
+            stmt.setInt(1, hashJugador);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 jugador = new Jugador();

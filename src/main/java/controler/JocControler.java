@@ -4,6 +4,7 @@ import datos.JugadorDaoJDBC;
 import datos.JugadorPartidaDaoJDBC;
 import datos.PartidaDaoJDBC;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -45,11 +46,13 @@ public class JocControler extends HttpServlet {
                 if (partidaAux.isTancada()) {
                     this.partida.setTancada(true);
                     this.partida.setEnMarxa(true);
+                    session.setAttribute("partida", this.partida);
                     request.getRequestDispatcher("joc.jsp").forward(request, response);
                 } else {
                     //Si no està encara tancada
                     this.partida.setTancada(false);
                     this.partida.setEnMarxa(true);
+                    session.setAttribute("partida", this.partida);
                     request.getRequestDispatcher("esperar.jsp").forward(request, response);
                 }
                 break;
@@ -60,26 +63,38 @@ public class JocControler extends HttpServlet {
                 new PartidaDaoJDBC().actualizar(this.partida);
                 //Indicam que encara no hem llançat
                 llancat = false;
+                session.setAttribute("partida", this.partida);
                 request.setAttribute("llancat", llancat);
                 request.getRequestDispatcher("joc.jsp").forward(request, response);
                 break;
             case "llancar":
                 //Hem de llancar, per això feim un joc nou
                 this.punts = jocNou();
+                this.jugador.setValorDau(this.punts);
                 llancat = true;
+                //Actualitzam el valors del jugador a la partida
                 new JugadorPartidaDaoJDBC().actualizar(this.jugador, this.partida, this.punts, this.ronda);
+                //Ho enviam al jsp
                 request.setAttribute("llancat", llancat);
                 request.setAttribute("valorDau", this.punts);
+                session.setAttribute("jugador", this.jugador);
                 request.getRequestDispatcher("joc.jsp").forward(request, response);
                 break;
             case "continuar":
-                this.ronda++;
-
+                //Hem de collir la partida/ronda actual
+                //Crear un objecte amb tot i passar-ho al jsp
+                System.out.println("--Continuar--");
+                List<Jugador> jugadors = new JugadorPartidaDaoJDBC().listarJugadors(this.partida, this.ronda);
+                System.out.println("Jugadors:" +  jugadors);
+                request.setAttribute("ronda", this.ronda);
+                request.setAttribute("jugadors", jugadors);
                 request.getRequestDispatcher("estadistiques.jsp").forward(request, response);
                 break;
             default:
                 break;
         }
+        session.setAttribute("partida", this.partida);
+        session.setAttribute("jugador", this.jugador);
     }
 
     @Override
@@ -159,7 +174,7 @@ public class JocControler extends HttpServlet {
     public void actualitzarJugadorsPartida(Partida partida) {
         //Hem de revisar tots els jugadors de la BD a quina partida estan i afegir-los a la 
         //Classe partida que tenim en marxa
-        List<Jugador> jugadors = new JugadorPartidaDaoJDBC().listarJugadors(partida);
+        List<Jugador> jugadors = new JugadorPartidaDaoJDBC().listarJugadors(partida, this.ronda);
         partida.actualitzaJugadors(jugadors);
     }
 
@@ -169,4 +184,5 @@ public class JocControler extends HttpServlet {
         this.joc.llancarDaus(this.jugador);
         return this.jugador.getValorDau();
     }
+    
 }

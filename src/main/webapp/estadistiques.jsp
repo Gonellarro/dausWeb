@@ -30,11 +30,12 @@
                                     <th scope="col">#<E/th>
                                 <th scope="col">Avatar</th>
                                 <th scope="col">Nom</th>
+                                <th scope="col">Punts</th>
+                                <th scope="col">Creador</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-
-                                    <c:forEach items = "${partida.jugadors}" var="jugador" varStatus="loopCounter">   
+                                    <c:forEach items = "${jugadors}" var="jugador" varStatus="loopCounter">   
                                         <tr>
                                             <th scope="row">
                                                 <c:out value="${loopCounter.count}"/>
@@ -43,6 +44,12 @@
                                                 <img src="resources/img/hippiicons/<c:out value="${jugador.avatar}"/>.png" width="42" height="42">
                                             </td><td>
                                                 ${jugador.nom}  
+                                            </td><td>
+                                                ${jugador.valorDau}
+                                            </td><td>
+                                                <c:if test = "${jugador.creador}">
+                                                    <img src="resources/img/corona.png" width="42">
+                                                </c:if>
                                             </td>
                                         </tr>
                                     </c:forEach>
