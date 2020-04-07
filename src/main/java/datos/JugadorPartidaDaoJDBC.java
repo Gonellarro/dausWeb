@@ -9,9 +9,9 @@ public class JugadorPartidaDaoJDBC {
 
     private static final String SQL_SELECT = "SELECT * FROM jugadorpartida where hashJugador = ? AND hashPartida = ? AND ronda = ?";
     private static final String SQL_SELECT_BY_JUGADOR = "SELECT hashPartida FROM jugadorpartida where hashJugador = ?";
-    private static final String SQL_SELECT_BY_PARTIDA = "SELECT hashJugador, creador, punts FROM jugadorpartida WHERE hashPartida = ? AND ronda = ?";
-    private static final String SQL_INSERT = "INSERT INTO jugadorpartida (hashJugador, hashPartida, creador, punts, ronda) VALUES(?, ?, ?, ?, ?)";
-    private static final String SQL_UPDATE = "UPDATE jugadorpartida SET punts=? WHERE hashPartida=? AND hashJugador=? AND  ronda=?";
+    private static final String SQL_SELECT_BY_PARTIDA = "SELECT hashJugador, creador, punts, guanyador FROM jugadorpartida WHERE hashPartida = ? AND ronda = ?";
+    private static final String SQL_INSERT = "INSERT INTO jugadorpartida (hashJugador, hashPartida, creador, punts, ronda, guanyador) VALUES(?, ?, ?, ?, ?, ?)";
+    private static final String SQL_UPDATE = "UPDATE jugadorpartida SET punts=?, creador=?, guanyador=? WHERE hashPartida=? AND hashJugador=? AND  ronda=?";
 
     public int consultaPunts(Jugador jugador, Partida partida, int ronda) {
         Connection conn = null;
@@ -19,6 +19,9 @@ public class JugadorPartidaDaoJDBC {
         ResultSet rs = null;
         int punts = 0;
         try {
+            
+            //SELECT * FROM jugadorpartida where hashJugador = ? AND hashPartida = ? AND ronda = ?";
+            
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT);
             stmt.setInt(1, jugador.getHashJugador());
@@ -47,6 +50,9 @@ public class JugadorPartidaDaoJDBC {
         Jugador jugador;
 
         try {
+            
+            //SELECT hashJugador, creador, punts, guanyador FROM jugadorpartida WHERE hashPartida = ? AND ronda = ?";
+            
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_BY_PARTIDA);
             stmt.setInt(1, partida.getHashPartida());
@@ -58,6 +64,8 @@ public class JugadorPartidaDaoJDBC {
                 int hashJugador = rs.getInt("hashJugador");
                 int punts = rs.getInt("punts");
                 boolean creador = rs.getBoolean("creador");
+                boolean guanyador = rs.getBoolean("guanyador");
+                
                 
                 //Cercarm els nom i avatar de la BD
                 jugador = new JugadorDaoJDBC().consultaJugador(hashJugador);
@@ -65,6 +73,7 @@ public class JugadorPartidaDaoJDBC {
                 //Assignam els punts i el creador
                 jugador.setValorDau(punts);
                 jugador.setCreador(creador);
+                jugador.setGuanyador(guanyador);
                 //Afeguim el jugador a llistat de jugadors
                 jugadors.add(jugador);
             }
@@ -87,6 +96,9 @@ public class JugadorPartidaDaoJDBC {
         Partida partida;
 
         try {
+            
+            //SELECT hashPartida FROM jugadorpartida where hashJugador = ?";
+            
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_SELECT_BY_JUGADOR);
             stmt.setInt(1, jugador.getHashJugador());
@@ -113,12 +125,16 @@ public class JugadorPartidaDaoJDBC {
         int row = 0;
         System.out.println("INSERTAR JUGADORPARIDA - JUGADORPARTIDADAOJDBC");
         try {
+            
+            //INSERT INTO jugadorpartida (hashJugador, hashPartida, creador, punts, ronda, guanyador) VALUES(?, ?, ?, ?, ?, ?)";
+            
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_INSERT, Statement.RETURN_GENERATED_KEYS);
             System.out.println("Jugador: " + jugador);
             stmt.setInt(1, jugador.getHashJugador());
             stmt.setInt(2, partida.getHashPartida());
             stmt.setBoolean(3, jugador.isCreador());
+            stmt.setBoolean(6, jugador.isGuanyador());
             stmt.setInt(4, punts);
             stmt.setInt(5, ronda);
 
@@ -137,12 +153,18 @@ public class JugadorPartidaDaoJDBC {
         PreparedStatement stmt = null;
         int rows = 0;
         try {
+            
+            //SET punts=?, creador=?, guanyador=? WHERE hashPartida=? AND hashJugador=? AND  ronda=?";
+            System.out.println("Jugador: " + jugador.getNom() + " - Partida: " + partida.getHashPartida() + " ronda: " + ronda);
+            
             conn = Conexion.getConnection();
             stmt = conn.prepareStatement(SQL_UPDATE);
-            stmt.setInt(1, punts);
-            stmt.setInt(4, ronda);
-            stmt.setInt(2, partida.getHashPartida());
-            stmt.setInt(3, jugador.getHashJugador());
+            stmt.setInt(1, jugador.getValorDau());
+            stmt.setBoolean(2, jugador.isCreador());
+            stmt.setBoolean(3, jugador.isGuanyador());
+            stmt.setInt(4, partida.getHashPartida());            
+            stmt.setInt(5, jugador.getHashJugador());            
+            stmt.setInt(6, ronda);
             rows = stmt.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace(System.out);
@@ -150,5 +172,7 @@ public class JugadorPartidaDaoJDBC {
             Conexion.close(stmt);
             Conexion.close(conn);
         }
+        
+        System.out.println("Rows: " + rows);
     }
 }

@@ -6,7 +6,7 @@
         <!-- Required meta tags -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <!--<meta http-equiv="refresh" content="5"> -->
+        <!--<meta http-equiv="refresh" content="30">-->
 
 
         <!-- Bootstrap CSS -->
@@ -22,7 +22,7 @@
             <div class="section m-2 p-2 border text-center">
                 <div class="row">
                     <div class="col-12 col-md-4">
-                        Partida: <p class="bg-dark text-light">${partida.hashPartida}</p>
+                        Partida: <p class="bg-dark text-light">${partida.hashPartida} - Ronda: ${ronda}</p>
 
                         <table class="table table-striped">
                             <thead>

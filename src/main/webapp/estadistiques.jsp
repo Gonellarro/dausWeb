@@ -17,12 +17,12 @@
     <body>
         <form action="${pageContext.request.contextPath}/JocControler" method="post">
             <jsp:include page="WEB-INF/comuns/capcalera.jsp"/>   
-            <h4 class="text-center">4.Esperant als jugadors</h4>
+            <h4 class="text-center">5.Resultats de la partida</h4>
             <br>
             <div class="section m-2 p-2 border text-center">
                 <div class="row">
                     <div class="col-12 col-md-4">
-                        Partida: <p class="bg-dark text-light">${partida.hashPartida}</p>
+                        Partida: <p class="bg-dark text-light">${partida.hashPartida} - Ronda: ${ronda}</p>
 
                         <table class="table table-striped">
                             <thead>
@@ -32,6 +32,7 @@
                                 <th scope="col">Nom</th>
                                 <th scope="col">Punts</th>
                                 <th scope="col">Creador</th>
+                                <th scope="col">Guanyador</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -48,17 +49,25 @@
                                                 ${jugador.valorDau}
                                             </td><td>
                                                 <c:if test = "${jugador.creador}">
+                                                    <img src="resources/img/ledVerd.png" width="42">
+                                                </c:if>
+                                                <c:if test = "${!jugador.creador}">
+                                                    <img src="resources/img/ledGris.png" width="42">
+                                                </c:if>
+                                            </td><td>
+                                                <c:if test = "${jugador.guanyador}">
                                                     <img src="resources/img/corona.png" width="42">
                                                 </c:if>
-                                            </td>
+                                           
+                                            
                                         </tr>
                                     </c:forEach>
                                 </tbody>
                         </table>  
                         <br>
-                        <a href="${pageContext.request.contextPath}/JocControler?accio=refrescar" class="btn btn-info">Refrescar</a>
+                        <a href="${pageContext.request.contextPath}/JocControler?accio=refrescar2" class="btn btn-info">Refrescar</a>
                         <c:if test = "${jugador.creador}">
-                            <a href="${pageContext.request.contextPath}/JocControler?accio=comencar" class="btn btn-primary">Començar</a>
+                            <a href="${pageContext.request.contextPath}/JocControler?accio=nova" class="btn btn-primary">Nova ronda</a>
                         </c:if> 
                     </div>			
                 </div>		

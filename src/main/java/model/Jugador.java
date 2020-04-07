@@ -5,12 +5,14 @@ public class Jugador {
     private String avatar;
     private int hashJugador;
     private boolean creador;
+    private boolean guanyador;
     private int valorDau;
     
     public Jugador(){
         this.avatar = "default";
         this.hashJugador = 0;
         this.creador = false;
+        this.guanyador = false;
         this.valorDau = 0;
     }
 
@@ -53,11 +55,21 @@ public class Jugador {
     public void setValorDau(int valorDau) {
         this.valorDau = valorDau;
     }
+    
+    public boolean isGuanyador() {
+        return guanyador;
+    }
+
+    public void setGuanyador(boolean guanyador) {
+        this.guanyador = guanyador;
+    }
 
     @Override
     public String toString() {
         return "Jugador{" + "nom=" + nom + ", avatar=" + avatar + ", hashJugador=" + hashJugador + ", creador=" + creador + ", valorDau=" + valorDau + '}';
     }
+
+
     
     
 }
